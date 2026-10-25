@@ -18,7 +18,7 @@ public class PackageResponse {
     public PackageResponse(String trackingNumber, String senderName, String receiverName,
                            String sourcePincode, String destinationPincode,
                            String sourceCity, String destinationCity,
-                           Double weight, PackageStatus status, LocalDateTime createdAt) {
+                           Double weight, PackageStatus status, LocalDateTime createdAt/*,String key*/) {
         this.trackingNumber = trackingNumber;
         this.senderName = senderName;
         this.receiverName = receiverName;

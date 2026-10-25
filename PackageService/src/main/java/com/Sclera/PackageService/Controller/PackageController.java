@@ -1,6 +1,7 @@
 package com.Sclera.PackageService.Controller;
 import com.Sclera.PackageService.DTO.PackageRequest;
 import com.Sclera.PackageService.DTO.PackageResponse;
+import com.Sclera.PackageService.Exception.InvalidPincodeException;
 import com.Sclera.PackageService.Service.PackageService;
 import com.Sclera.PackageService.Service.PackageServiceImpl;
 import jakarta.validation.Valid;
@@ -25,7 +26,7 @@ public class PackageController {
     }
 
     @PostMapping
-    public ResponseEntity<PackageResponse> createPackage(@Valid @RequestBody PackageRequest request) {
+    public ResponseEntity<PackageResponse> createPackage(@Valid @RequestBody PackageRequest request) throws InvalidPincodeException {
         PackageResponse response = packageService.createPackage(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }

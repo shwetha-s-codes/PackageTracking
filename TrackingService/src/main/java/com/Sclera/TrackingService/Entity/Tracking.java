@@ -26,10 +26,11 @@ public class Tracking {
     @Column(name = "last_updated")
     private LocalDateTime lastUpdated;
 
+   protected Tracking(){}
 
-
-    public Tracking(String trackingNumber, String currentLocation, TrackingStatus status) {
-        this.trackingNumber = trackingNumber;
+    public Tracking(String id,String trackingNumber, String currentLocation, TrackingStatus status) {
+       this.id=id;
+       this.trackingNumber = trackingNumber;
         this.currentLocation = currentLocation;
         this.status = status;
     }

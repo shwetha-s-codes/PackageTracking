@@ -1,4 +1,7 @@
 package com.Sclera.PackageService.Service;
+import com.Sclera.PackageService.Client.PincodeClient;
+import com.Sclera.PackageService.Config.RabbitMQConfig;
+import com.Sclera.PackageService.Event.PackageCreatedEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -9,6 +12,8 @@ import com.Sclera.PackageService.Entity.Package;
 import com.Sclera.PackageService.Entity.PackageStatus;
 import com.Sclera.PackageService.Exception.PackageNotFoundException;
 import com.Sclera.PackageService.Repository.PackageRepository;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -27,9 +32,11 @@ public class PackageServiceImpl implements PackageService {
     //private final PincodeClient pincodeClient;
     private final RedisTemplate<String, Object> redisTemplate;
     private static final Logger log = LoggerFactory.getLogger(PackageServiceImpl.class);
+   @Autowired
+    public RabbitTemplate rabbitTemplate;
 
     public PackageServiceImpl(PackageRepository packageRepository,
-                              //PincodeClient pincodeClient,
+                              PincodeClient pincodeClient,
                               RedisTemplate<String, Object> redisTemplate) {
         this.packageRepository = packageRepository;
         //this.pincodeClient = pincodeClient;
@@ -39,6 +46,7 @@ public class PackageServiceImpl implements PackageService {
     public PackageResponse createPackage(PackageRequest request) {
         //String sourceCity = pincodeClient.resolveCity(request.getSourcePincode());
         //String destinationCity = pincodeClient.resolveCity(request.getDestinationPincode());
+
 
         String trackingNumber = UUID.randomUUID().toString();
 
@@ -56,6 +64,16 @@ public class PackageServiceImpl implements PackageService {
 
         Package saved = packageRepository.save(pkg);
         log.info("Package Saved");
+
+
+        //Instead of directly sending the event, we are sending it to a queue
+
+        rabbitTemplate.convertAndSend(
+                RabbitMQConfig.EXCHANGE,
+                RabbitMQConfig.PACKAGE_CREATED_ROUTING_KEY,
+                new PackageCreatedEvent(saved.getTrackingNumber(), saved.getSourceCity(), saved.getDestinationCity())
+        );
+        log.info("Sent package.created event");
         return toResponse(saved);
     }
 
@@ -74,6 +92,7 @@ public class PackageServiceImpl implements PackageService {
                 .orElseThrow(() -> new PackageNotFoundException(trackingNumber));
         PackageResponse response = toResponse(pkg);
 
+        //TLL
         redisTemplate.opsForValue().set(cacheKey, response, CACHE_TTL_MINUTES, TimeUnit.MINUTES);
         return response;
     }

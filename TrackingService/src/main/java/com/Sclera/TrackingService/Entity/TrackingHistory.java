@@ -30,7 +30,8 @@ public class TrackingHistory {
     protected TrackingHistory() {
     }
 
-    public TrackingHistory(String trackingNumber, String location, TrackingStatus status, String remarks) {
+    public TrackingHistory(String id,String trackingNumber, String location, TrackingStatus status, String remarks) {
+        this.id=id;
         this.trackingNumber = trackingNumber;
         this.location = location;
         this.status = status;

@@ -7,5 +7,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface PackageRepository extends JpaRepository<Package, String> {
-    // findAll(Pageable) is inherited — no need to write pagination logic yourself
+
 }
