@@ -154,6 +154,4 @@ Environment variables used by Docker Compose:
 - RabbitMQ is used for event-based communication between package and tracking flows.
 - MySQL initializes the required databases and supports persistent storage for package and tracking records.
 
-## License
 
-This project does not currently include a license file. Add one if you want to define usage and distribution rules.
